@@ -8,8 +8,8 @@ function check_pod_readiness() {
 		if [[($pod =~ "Running") || ($pod =~ "Completed")]]
 		then 
 			((NUM_READY_PODS++))
-		fi
-		((NUM_PODS++))
+        fi
+        ((NUM_PODS++))
 	done
 	echo $(($NUM_READY_PODS * 100 / $NUM_PODS))
 }
@@ -31,16 +31,16 @@ wait_for_all_pod_completion
 echo "*******All system pods of the Kubernetes cluster are now running*******"
 echo "**************************************************************************"
 
-kubectl apply -f istio-1.0.3/install/kubernetes/helm/istio/templates/crds.yaml
-kubectl apply -f istio-1.0.3/install/kubernetes/istio-demo-auth.yaml
+kubectl apply -f istio-1.0.5/install/kubernetes/helm/istio/templates/crds.yaml
+kubectl apply -f istio-1.0.5/install/kubernetes/istio-demo-auth.yaml
 wait_for_all_pod_completion
 echo "*******Installed Istio*******"
 echo "**************************************************************************"
 
 echo "***Setting up the bookinfo application***"
 kubectl label namespace default istio-injection=enabled
-kubectl apply -f istio-1.0.3/samples/bookinfo/platform/kube/bookinfo.yaml
-kubectl apply -f istio-1.0.3/samples/bookinfo/networking/bookinfo-gateway.yaml
+kubectl apply -f istio-1.0.5/samples/bookinfo/platform/kube/bookinfo.yaml
+kubectl apply -f istio-1.0.5/samples/bookinfo/networking/bookinfo-gateway.yaml
 wait_for_all_pod_completion
 INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 INGRESS_HOST=$(sudo minikube ip)
