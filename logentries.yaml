@@ -1,0 +1,87 @@
+
+# Configuration for logentry instances
+apiVersion: "config.istio.io/v1alpha2"
+kind: logentry
+metadata:
+  name: newaccesslog2
+  namespace: istio-system
+spec:
+  severity: '"info"'
+  timestamp: request.time | response.time | context.time | timestamp(response.headers["date"]) | timestamp("2015-01-02T15:04:35Z")
+  variables:
+    apiClaims: request.auth.raw_claims | ""
+    #requestAuthPrincipal: request.auth.principal | ""
+    #requestAuthAudiences: request.auth.audiences | ""
+    #requestAuthPresenter: request.auth.presenter | ""
+    #requestAuthClaims: request.auth.claims
+    apiKey: request.api_key | request.headers["x-api-key"] | ""
+    clientTraceId: request.headers["x-client-trace-id"] | request.headers["clientTraceId"] | ""
+    connectionSecurityPolicy: conditional((context.reporter.kind | "inbound") == "outbound", "unknown", conditional(connection.mtls | false, "mutual_tls", "none"))
+    destinationApp: destination.labels["app"] | ""
+    destinationIp: destination.ip | ip("0.0.0.0")
+    destinationName: destination.name | ""
+    destinationNamespace: destination.namespace | ""
+    destinationOwner: destination.owner | ""
+    destinationPrincipal: destination.principal | ""
+    destinationServiceHost: destination.service.host | ""
+    destinationWorkload: destination.workload.name | ""
+    httpAuthority: request.headers[":authority"] | request.host | request.headers["httpAuthority"] | ""
+    latency: response.duration | "0ms"
+    method: request.method | ""
+    protocol: request.scheme | context.protocol | "http"
+    receivedBytes: request.total_size | 0
+    referer: request.referer | ""
+    reporter: conditional((context.reporter.kind | "inbound") == "outbound", "source", "destination")
+    requestId: request.headers["x-request-id"] | request.headers["requestId"] | ""
+    requestSize: request.size | 0
+    requestedServerName: connection.requested_server_name | ""
+    responseCode: response.code | 0
+    responseSize: response.size | 0
+  # responseTimestamp: response.time
+    sentBytes: response.total_size | 0
+    sourceApp: source.labels["app"] | ""
+    sourceIp: source.ip | ip("0.0.0.0")
+    sourceName: source.name | ""
+    sourceNamespace: source.namespace | ""
+    sourceOwner: source.owner | ""
+    sourcePrincipal: source.principal | ""
+    sourceWorkload: source.workload.name | ""
+    url: request.path | request.headers[":path"] | ""
+    userAgent: request.useragent | ""
+    xForwardedFor: request.headers["x-forwarded-for"] | "0.0.0.0"
+    xB3TraceId: request.headers["x-b3-traceid"] | ""
+    xB3SpanId: request.headers["x-b3-spanid"] | ""
+    xB3Sampled: request.headers["x-b3-sampled"] | ""
+    xEnvoyInternal: request.headers["x-envoy-internal"] | "false"
+    xEnvoyDecoratorOperation: request.headers["x-envoy-decorator-operation"] | ""
+    upgradeInsecureRequests: request.headers["upgrade-insecure-requests"] | ""
+    accept: request.headers["accept"] | ""
+    acceptEncoding: request.headers["accept-encoding"] | ""
+    acceptLanguage: request.headers["accept-language"] | ""
+    cacheControl: request.headers["cache-control"] | ""
+    istioAuthenticationPayload: request.headers["sec-istio-authn-payload"]
+  monitored_resource_type: '"global"'
+---
+# Configuration for a fluentd handler
+apiVersion: "config.istio.io/v1alpha2"
+kind: fluentd
+metadata:
+  name: handler
+  namespace: istio-system
+spec:
+  address: "fluentd-es.logging:24224"
+---
+
+# Rule to send logentry instances to the fluentd handler
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: testlogtofluentd
+  namespace: istio-system
+spec:
+  match: "true" # match for all requests
+  actions:
+   - handler: handler.fluentd
+     instances: 
+     - newaccesslog2.logentry
+---
