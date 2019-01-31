@@ -1,0 +1,13 @@
+
+# Log file
+*.log
+
+# intelij
+.idea/
+*.iml
+
+# virtual environment
+venv/
+
+# Istio source code
+istio-1.*/
