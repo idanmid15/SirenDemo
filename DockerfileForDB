@@ -1,0 +1,6 @@
+FROM python:3
+
+WORKDIR /usr/src/app
+COPY creditcard_db.py .
+EXPOSE 8075
+CMD python creditcard_db.py
