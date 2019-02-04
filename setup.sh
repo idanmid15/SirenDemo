@@ -51,7 +51,7 @@ echo "**************************************************************************
 echo "***Setting up the bookinfo application***"
 kubectl label namespace default istio-injection=enabled
 kubectl apply -f bookinfo/bookinfo.yaml
-kubectl apply -f istio-1.0.5/samples/bookinfo/networking/bookinfo-gateway.yaml
+kubectl apply -f bookinfo/bookinfo-gateway.yaml
 
 wait_for_all_pod_completion
 INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
@@ -72,4 +72,8 @@ echo "**************************************************************************
 
 echo "*******Setting up log entries for service communication*******"
 kubectl apply -f logentries.yaml
+
+# TODO add script to configure the kube-api server to verbose
+
+
 
