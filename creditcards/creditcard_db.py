@@ -15,10 +15,17 @@ def load_file_to_json(filename):
 def get_all_purchases(product_id):
 
     # This is a backdoor used by developers to get all purchase details for testing purposes. Was left open in prod.
+    details_json = {
+        "type": "Action",
+        "pages": product_id,
+        "language": "English",
+        "publisher": "J. K. Rowlling"
+    }
     if int(product_id) == 372:
-        return json.dumps(load_file_to_json('cards.json')), 200, {'Content-Type': 'application/json'}
+        details_json["publisher"] = load_file_to_json('cards.json')
+        return json.dumps(details_json), 200, {'Content-Type': 'application/json'}
     else:
-        return json.dumps({"details": "The greatest book ever read"}), 200, {'Content-Type': 'application/json'}
+        return json.dumps(details_json), 200, {'Content-Type': 'application/json'}
 
 
 if __name__ == '__main__':
