@@ -15,9 +15,8 @@ function check_pod_readiness() {
 }
 
 function wait_for_all_pod_completion() {
-	sleep 10
-	READINESS=$(check_pod_readiness)
-	while [ $READINESS -lt 100 ]
+	READINESS=0
+	while [[ ${READINESS} -lt 100 ]]
 	do
 		echo "Preparing all pods, current pod readiness is $READINESS%"
 		sleep 30
@@ -25,29 +24,43 @@ function wait_for_all_pod_completion() {
 	done
 }
 
-
+# Have to run minikube as root since using the none vm-driver
 sudo minikube start --vm-driver=none --memory=4096 --cpus=3
 wait_for_all_pod_completion
 echo "*******All system pods of the Kubernetes cluster are now running*******"
 echo "**************************************************************************"
 
-kubectl apply -f istio-1.0.5/install/kubernetes/helm/istio/templates/crds.yaml
-kubectl apply -f istio-1.0.5/install/kubernetes/istio-demo-auth.yaml
+helm template --set kiali.enabled=true istio-1.0.5/install/kubernetes/helm/istio \
+ --name istio \
+ --namespace istio-system > $HOME/istio.yaml
+
+kubectl create namespace istio-system
+kubectl apply -f $HOME/istio.yaml
+
 wait_for_all_pod_completion
 echo "*******Installed Istio*******"
 echo "**************************************************************************"
 
+echo "***Creating the image for the credit card DB***"
+cd creditcards
+docker build -f DockerfileForDB -t creditcard_db .
+cd ..
+echo "*******Finished creating the image*******"
+echo "**************************************************************************"
+
 echo "***Setting up the bookinfo application***"
 kubectl label namespace default istio-injection=enabled
-kubectl apply -f istio-1.0.5/samples/bookinfo/platform/kube/bookinfo.yaml
+kubectl apply -f bookinfo/bookinfo.yaml
 kubectl apply -f istio-1.0.5/samples/bookinfo/networking/bookinfo-gateway.yaml
+
 wait_for_all_pod_completion
 INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 INGRESS_HOST=$(sudo minikube ip)
-GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+GATEWAY_URL=${INGRESS_HOST}:${INGRESS_PORT}
+
 echo "*******Created bookinfo basic application - currently launching*******"
-echo "*******Gateway url is $GATEWAY_URL*******"
-curl http://$GATEWAY_URL/productpage
+echo "*******Product page url is http://$GATEWAY_URL/productpage*******"
+curl http://${GATEWAY_URL}/productpage
 echo "**************************************************************************"
 
 echo "*******Launching ElasticSearch, Fluentd and Kibana*******"
@@ -60,21 +73,3 @@ echo "**************************************************************************
 echo "*******Setting up log entries for service communication*******"
 kubectl apply -f logentries.yaml
 
-echo "*******Creating the docker container image for the pod-communicator*******"
-#docker build -t comtesting .
-echo "**************************************************************************"
-
-echo "*******Creating the config for the pod-communicator*******"
-cat <<EOF | kubectl apply -f -
-# Fluentd ConfigMap, contains config files.
-kind: ConfigMap
-apiVersion: v1
-data:
-  elasticsearch-ip: "$ELASTIC_IP"
-  elasticsearch-port: "$ELASTIC_PORT"
-metadata:
-  name: pod-communicator-config
-EOF
-echo "*******Creating the pod-communicator*******"
-# kubectl apply -f pod-communicator.yaml
-echo "**************************************************************************"
