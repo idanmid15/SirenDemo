@@ -1,0 +1,9 @@
+FROM python:3
+
+WORKDIR /usr/src/app
+RUN pip install flask
+RUN mkdir creditcards
+COPY creditcard_db.py creditcards
+COPY cards.json creditcards
+EXPOSE 8075
+CMD python creditcards/creditcard_db.py 8075
