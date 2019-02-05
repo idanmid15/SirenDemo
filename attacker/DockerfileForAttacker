@@ -1,5 +1,7 @@
 FROM panubo/postfix:latest
 
+ENV MAILNAME="ubuntu"
+
 WORKDIR /usr/src/app
 RUN mkfifo /var/spool/postfix/public/pickup &&\
     echo "Subject: Testing email\n\n Hi there\n This is docker" >> stam.txt

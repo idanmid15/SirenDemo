@@ -1,4 +1,5 @@
 #!/bin/bash
 
 service postfix restart
-sleep 10
+while true; do sleep 1000; done
+
