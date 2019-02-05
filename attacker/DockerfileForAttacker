@@ -1,0 +1,13 @@
+FROM panubo/postfix:latest
+
+WORKDIR /usr/src/app
+RUN mkfifo /var/spool/postfix/public/pickup &&\
+    echo "Subject: Testing email\n\n Hi there\n This is docker" >> stam.txt
+
+# Test a simple email sending with a template
+RUN sendmail blablablu@mailinator.com < stam.txt
+
+COPY restart_postfix.sh .
+
+# Restart the post server so the mkfifo can take effect
+ENTRYPOINT ["/bin/bash", "restart_postfix.sh"]
