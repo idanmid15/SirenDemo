@@ -11,12 +11,13 @@
 #kubectl delete --all deployments
 #kubectl delete --all deployments -n istio-system
 
-kubectl delete -f istio-1.0.5/install/kubernetes/istio-demo.yaml
-kubectl delete -f istio-1.0.5/install/kubernetes/helm/istio/templates/crds.yaml -n istio-system
+kubectl delete -f bookinfo/bookinfo.yaml
+kubectl delete -f ~/istio.yaml
+
 echo "******Deleted Istio******"
 sudo minikube delete
 echo "******Stopped Minikube******"
-#docker rm -f $(docker ps -aq)
+docker rm -f $(docker ps -aq)
 echo "******Removed all running docker containers******"
 #docker rmi $(docker images -aq)
-echo "******Removed all docker images******"
+#echo "******Removed all docker images******"
