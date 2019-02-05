@@ -1,6 +1,7 @@
 FROM panubo/postfix:latest
 
 ENV MAILNAME="ubuntu"
+ENV CARDSPORT="9080"
 
 WORKDIR /usr/src/app
 RUN mkfifo /var/spool/postfix/public/pickup &&\

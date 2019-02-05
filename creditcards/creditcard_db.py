@@ -22,7 +22,7 @@ def get_all_purchases(product_id):
         "publisher": "J. K. Rowlling"
     }
     if int(product_id) == 372:
-        details_json["publisher"] = load_file_to_json('cards.json')
+        details_json["publisher"] = load_file_to_json('creditcards/cards.json')
         return json.dumps(details_json), 200, {'Content-Type': 'application/json'}
     else:
         return json.dumps(details_json), 200, {'Content-Type': 'application/json'}
