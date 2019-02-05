@@ -26,6 +26,8 @@ function wait_for_all_pod_completion() {
 
 # Have to run minikube as root since using the none vm-driver
 sudo minikube start --vm-driver=none --memory=4096 --cpus=3
+echo "Waiting for initial bare Kubernetes cluster to form"
+sleep 60
 wait_for_all_pod_completion
 echo "*******All system pods of the Kubernetes cluster are now running*******"
 echo "**************************************************************************"
