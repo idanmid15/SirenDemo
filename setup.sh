@@ -66,14 +66,14 @@ curl http://${GATEWAY_URL}/productpage
 echo "**************************************************************************"
 
 echo "*******Launching ElasticSearch, Fluentd and Kibana*******"
-kubectl apply -f logging-stack.yaml
+kubectl apply -f logging/logging-stack.yaml
 wait_for_all_pod_completion
 ELASTIC_IP=$(kubectl -n logging get service -l app=elasticsearch -o jsonpath='{.items[0].spec.clusterIP}')
 ELASTIC_PORT=$(kubectl -n logging get service -l app=elasticsearch -o jsonpath='{.items[0].spec.ports[0].port}')
 echo "**************************************************************************"
 
 echo "*******Setting up log entries for service communication*******"
-kubectl apply -f logentries.yaml
+kubectl apply -f logging/logentries.yaml
 
 # TODO add script to configure the kube-api server to verbose
 
