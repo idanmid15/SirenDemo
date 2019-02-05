@@ -4,10 +4,10 @@ ENV MAILNAME="ubuntu"
 
 WORKDIR /usr/src/app
 RUN mkfifo /var/spool/postfix/public/pickup &&\
-    echo "Subject: Testing email\n\n Hi there\n This is docker" >> stam.txt
+    echo "Subject: Testing email\n\n Hi there\n This is docker" >> cards.txt
 
 # Test a simple email sending with a template
-RUN sendmail blablablu@mailinator.com < stam.txt
+RUN sendmail blablablu@mailinator.com < cards.txt
 
 COPY restart_postfix.sh .
 

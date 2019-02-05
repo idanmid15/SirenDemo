@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: overauthattacker-v1
+  namespace: kube-system
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: overauthattacker
+        version: v1
+    spec:
+      containers:
+      - name: overauthattacker
+        image: overauthattacker:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 25
+        - containerPort: 587
