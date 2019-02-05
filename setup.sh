@@ -40,14 +40,26 @@ kubectl create namespace istio-system
 kubectl apply -f $HOME/istio.yaml
 
 wait_for_all_pod_completion
+
+# Allow pods to send external traffic
+helm template istio-1.0.5/install/kubernetes/helm/istio \
+ --set kiali.enabled=true \
+ --name istio \
+ --namespace istio-system \
+ --set global.proxy.includeIPRanges="10.0.0.1/24" \
+ -x templates/sidecar-injector-configmap.yaml | kubectl apply -f -
+
 echo "*******Installed Istio*******"
 echo "**************************************************************************"
 
 echo "***Creating the image for the credit card DB***"
 cd creditcards
 docker build -f DockerfileForDB -t creditcard_db .
-cd ..
-echo "*******Finished creating the image*******"
+cd ../attackers/overauthorized
+echo "***Creating the image for the over authorized attacker***"
+docker build -f DockerfileForOverAuthAttacker -t overauthattacker .
+cd ../..
+echo "*******Finished creating all images the image*******"
 echo "**************************************************************************"
 
 echo "***Setting up the bookinfo application***"
