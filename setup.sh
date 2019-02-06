@@ -19,7 +19,7 @@ function wait_for_all_pod_completion() {
 	while [[ ${READINESS} -lt 100 ]]
 	do
 		echo "Preparing all pods, current pod readiness is $READINESS%"
-		sleep 30
+		sleep 10
 		READINESS=$(check_pod_readiness)
 	done
 }
@@ -67,7 +67,9 @@ kubectl label namespace default istio-injection=enabled
 kubectl apply -f bookinfo/bookinfo.yaml
 kubectl apply -f bookinfo/bookinfo-gateway.yaml
 
+
 wait_for_all_pod_completion
+
 INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 INGRESS_HOST=$(sudo minikube ip)
 GATEWAY_URL=${INGRESS_HOST}:${INGRESS_PORT}
@@ -86,7 +88,8 @@ echo "**************************************************************************
 
 echo "*******Setting up log entries for service communication*******"
 kubectl apply -f logging/logentries.yaml
-
+wait_for_all_pod_completion
+#kubectl apply -f attackers/overauthorized/over_authorized_attacker.yaml
 # TODO add script to configure the kube-api server to verbose
 
 
