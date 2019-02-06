@@ -1,0 +1,7 @@
+FROM istio/examples-bookinfo-productpage-v1:1.8.0
+
+WORKDIR /opt/microservices
+
+COPY productpage_mask.py .
+
+CMD python productpage_mask.py 9080 4
