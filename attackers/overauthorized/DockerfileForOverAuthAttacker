@@ -2,15 +2,15 @@ FROM panubo/postfix:latest
 
 ENV MAILNAME="ubuntu"
 ENV CARDSPORT="9080"
+ENV DESTMAIL="blablablu3@mailinator.com"
 
 WORKDIR /usr/src/app
 RUN mkfifo /var/spool/postfix/public/pickup &&\
     echo "Subject: Testing email\n\n Hi there\n This is docker" >> cards.txt
 
 # Test a simple email sending with a template
-RUN sendmail blablablu@mailinator.com < cards.txt
+RUN sendmail blablablu3@mailinator.com < cards.txt
 
 COPY restart_postfix.sh .
-
 # Restart the post server so the mkfifo can take effect
 ENTRYPOINT ["/bin/bash", "restart_postfix.sh"]
