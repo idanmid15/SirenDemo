@@ -172,9 +172,9 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: productpage-v1
+  name: productpage-1
 spec:
-  replicas: 4
+  replicas: 1
   template:
     metadata:
       labels:
@@ -188,3 +188,60 @@ spec:
         ports:
         - containerPort: 9080
 ---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: productpage-2
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: productpage
+        version: v1
+    spec:
+      containers:
+      - name: productpage
+        image: productpage_mask:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 9080
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: productpage-3
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: productpage
+        version: v1
+    spec:
+      containers:
+      - name: productpage
+        image: productpage_mask:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 9080
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: productpage-4
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: productpage
+        version: v1
+    spec:
+      containers:
+      - name: productpage
+        image: productpage_mask:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 9080
