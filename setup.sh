@@ -91,6 +91,8 @@ kubectl apply -f logging/logentries.yaml
 wait_for_all_pod_completion
 #kubectl apply -f attackers/overauthorized/over_authorized_attacker.yaml
 # TODO add script to configure the kube-api server to verbose
+# In order to turn the kube-api to verbose in minikube, you will need to change the file
+# /etc/kubernetes/manifests/kube-apiserver.yaml and add a --v 4 flag to the kube-api call
 
 
 
